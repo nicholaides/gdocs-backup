@@ -28,19 +28,20 @@ class MainWindow
   def initialize
     main_frame = Swing::Build.new(JFrame, :x){}.build("Simple Draw") do |c|
       c.add backups_panel, W
-      c.add backup_details, C
+      c.add backup_panel, C
+      #c.add file_panel, 
     end
     main_frame.default_close_operation = JFrame::EXIT_ON_CLOSE
   end
   
-  def backup_details
+  def backup_panel
     JPanel.new(BorderLayout.new).tap do |jp|
       jp.add l("Backup Details"), N
-      jp.add backup_details_panel, C
+      jp.add backup_details, C
     end
   end
   
-  def backup_details_panel
+  def backup_details
     JPanel.new(BorderLayout.new).tap do |jp|
       jp.add backup_details_fields, N
       jp.add backup_files, C
