@@ -215,7 +215,7 @@ class Proc
   # The two parameters are a symbol for the method that Java called on this, and then the
   # event argument.
   def to_listener(action)
-    Profligacy::Swing::Listeners.const_get("#{action.to_s.capitalize}ListenerProc").new &self
+    Profligacy::Swing::Listeners.const_get("#{action.to_s.split('_').map{|s| s.capitalize}.join}ListenerProc").new &self
   end
 
   # Converts this Proc to a RunnableProc which implements the Runnable interface.

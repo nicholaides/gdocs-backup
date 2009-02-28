@@ -1,6 +1,7 @@
 module GUIShortcuts
   include_package 'javax.swing'
   include_package 'java.awt'
+  include Profligacy
   
   def d(x,y)
     Dimension.new(x,y)
@@ -28,4 +29,14 @@ module GUIShortcuts
   def b(*args)
     JButton.new *args
   end
+  
+  def p(*args, &block)
+    Swing::Build.new JPanel, *args, &block 
+  end
+  
+  N = BorderLayout::NORTH
+  S = BorderLayout::SOUTH
+  E = BorderLayout::EAST
+  W = BorderLayout::WEST
+  C = BorderLayout::CENTER
 end

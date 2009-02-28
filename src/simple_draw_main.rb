@@ -10,10 +10,7 @@ require 'profligacy/lel'
 require 'facets/core/facets'
 
 require 'gui_shortcuts'
-
 require 'list_model'
-require 'shapes'
-require 'shapes_panel'
 
 
 class Driver
@@ -30,25 +27,67 @@ class MainWindow
   
   def initialize
     main_frame = Swing::Build.new(JFrame, :x){}.build("Simple Draw") do |c|
-      c.add buttons_panel, BorderLayout::WEST
+      c.add backups_panel, W
+      c.add backup_details, C
     end
     main_frame.default_close_operation = JFrame::EXIT_ON_CLOSE
   end
   
-  def buttons_panel
+  def backup_details
+    JPanel.new(BorderLayout.new).tap do |jp|
+      jp.add l("Backup Details"), N
+      jp.add backup_details_panel, C
+    end
+  end
+  
+  def backup_details_panel
+    JPanel.new(BorderLayout.new).tap do |jp|
+      jp.add backup_details_fields, N
+      jp.add backup_files, C
+    end
+  end
+  
+  def backup_details_fields
     layout = "
-      [title]
-      [list]
-      [restore | delete]
+      [date_l | date]
+      [size_l | size]
     "
-    Swing::LEL.new JPanel, layout  do |c,i|
-      c.title = l "Previous Backups"
-      c.list  = JList.new.tap do |l|
-        l.preferred_size = d(100, 300)
-      end
-      c.restore = b "Restore"
-      c.delete  = b "Delete"
+    Swing::LEL.new JPanel, layout do |c,i|
+      c.date_l = l('Date')
+      c.date = @date_field = l('...')
+      c.size_l = l('Size')
+      c.size = @size_field = l('...')
     end.build
+  end
+  
+  def backup_files
+    @files = ListModel.new
+    JPanel.new(BorderLayout.new).tap do |jp|
+      jp.add number_of_files_label, N
+      jp.add JList.new(@files), C
+    end
+  end
+  
+  def number_of_files_label
+    @number_of_files_label = JLabel.new.tap do |label|
+      @files.addListDataListener(proc{
+        label.text = "#{@files.size} files backed up"
+      }.to_listener(:list_data))
+    end
+  end
+  
+  def backups_panel
+    @backups = ListModel.new
+    @backups << 'Stuff' << 'Grapes'
+    
+    JPanel.new(BorderLayout.new).tap do |jp|
+      jp.add l("Previous Backups"), N
+      jp.add JList.new(@backups), C
+      jp.add( p(:restore, :delete) { |c,i|
+        c.restore = b "Restore"
+        c.delete  = b "Delete"
+      }.build, S)
+    end
   end
 end
 
