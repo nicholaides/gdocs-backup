@@ -84,7 +84,7 @@ class MainWindow
     JPanel.new(BorderLayout.new).tap do |jp|
       jp.add l("Previous Backups"), N
       jp.add JList.new(@backups), C
-      jp.add( p(:restore, :delete) { |c,i|
+      jp.add( panel(:restore, :delete) { |c,i|
         c.restore = b "Restore"
         c.delete  = b "Delete"
       }.build, S)
@@ -95,6 +95,7 @@ class MainWindow
     JPanel.new.tap do |jp|
       jp.layout = BoxLayout.new(jp, BoxLayout::X_AXIS)
       jp.add file_title
+      jp.add file_details
     end
   end
   
@@ -102,6 +103,10 @@ class MainWindow
     JPanel.new.tap do |jp|
       jp.add l("File Title...")
     end
+  end
+  
+  def file_details
+    two_column_panel(:type, :owner, :shared_with, :size, :created_at, :last_modified)
   end
 end
 

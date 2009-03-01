@@ -2,6 +2,12 @@ module GUIShortcuts
   include_package 'javax.swing'
   include_package 'java.awt'
   include Profligacy
+
+  N = BorderLayout::NORTH
+  S = BorderLayout::SOUTH
+  E = BorderLayout::EAST
+  W = BorderLayout::WEST
+  C = BorderLayout::CENTER
   
   def d(x,y)
     Dimension.new(x,y)
@@ -12,8 +18,8 @@ module GUIShortcuts
   end
 
   # convenience method for creating JLables
-	def l(*args)
-    JLabel.new *args
+	def l(text, name="")
+    JLabel.new(text) #.tap{|jl| jl.name = name }
   end
 
   # convenience method for creating JTextFields
@@ -30,13 +36,22 @@ module GUIShortcuts
     JButton.new *args
   end
   
-  def p(*args, &block)
+  def panel(*args, &block)
     Swing::Build.new JPanel, *args, &block 
   end
   
-  N = BorderLayout::NORTH
-  S = BorderLayout::SOUTH
-  E = BorderLayout::EAST
-  W = BorderLayout::WEST
-  C = BorderLayout::CENTER
+  def two_column_layout(*args)
+    args.map{|a| "[#{a}_l|#{a}]"}.join
+  end
+  
+  def two_column_panel(*args)
+    layout = two_column_layout(*args)
+    Swing::LEL.new JPanel, layout do |c,i|
+      args.each do |a|
+        p "#{a}_l=", l(a.to_s)
+        c.send "#{a}_l=", l(a.to_s)
+        c.send "#{a}=", l(a.to_s, a.to_s)
+      end
+    end.build
+  end
 end
