@@ -37,7 +37,7 @@ module GUIShortcuts
   end
   
   def panel(*args, &block)
-    Swing::Build.new JPanel, *args, &block 
+    Swing::Build.new(JPanel, *args, &block).build
   end
   
   def two_column_layout(*args)
