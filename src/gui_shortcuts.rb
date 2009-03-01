@@ -53,4 +53,12 @@ module GUIShortcuts
       end
     end.build
   end
+  
+  def title_panel(text, &block)
+    JPanel.new(FlowLayout.new(FlowLayout::LEFT)).tap do |jp|
+      label = l(text)
+      jp.add label
+      yield label if block_given?
+    end
+  end
 end
