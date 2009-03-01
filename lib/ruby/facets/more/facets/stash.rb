@@ -36,7 +36,7 @@ class Stash < Hash
   end
 
   def <<(other)
-    cash other
+    case other
     when Hash
       super(other.rekey(&:to_s))
     when Array

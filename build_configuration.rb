@@ -1,8 +1,8 @@
 configuration do |c|
-  c.project_name = 'SimpleDraw'
+  c.project_name = 'GDocs Backup'
   c.output_dir = 'package'
-  c.main_ruby_file = 'simple_draw_main'
-  c.main_java_file = 'nicholaides.SimpleDraw.Main'
+  c.main_ruby_file = 'main'
+  c.main_java_file = 'nicholaides.GDocsBackup.Main'
 
   # Compile all Ruby and Java files recursively
   # Copy all other files taking into account exclusion filter
