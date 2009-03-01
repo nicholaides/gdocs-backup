@@ -29,7 +29,7 @@ class MainWindow
     main_frame = Swing::Build.new(JFrame, :x){}.build("Simple Draw") do |c|
       c.add backups_panel, W
       c.add backup_panel, C
-      #c.add file_panel, 
+      c.add file_panel, E
     end
     main_frame.default_close_operation = JFrame::EXIT_ON_CLOSE
   end
@@ -88,6 +88,19 @@ class MainWindow
         c.restore = b "Restore"
         c.delete  = b "Delete"
       }.build, S)
+    end
+  end
+  
+  def file_panel
+    JPanel.new.tap do |jp|
+      jp.layout = BoxLayout.new(jp, BoxLayout::X_AXIS)
+      jp.add file_title
+    end
+  end
+  
+  def file_title
+    JPanel.new.tap do |jp|
+      jp.add l("File Title...")
     end
   end
 end
