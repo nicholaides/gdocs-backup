@@ -41,15 +41,14 @@ module GUIShortcuts
   end
   
   def two_column_layout(*args)
-    args.map{|a| "[#{a}_l|#{a}]"}.join
+    args.map{|a| "[<#{a}_l|<#{a}]"}.join
   end
   
   def two_column_panel(*args)
     layout = two_column_layout(*args)
     Swing::LEL.new JPanel, layout do |c,i|
       args.each do |a|
-        p "#{a}_l=", l(a.to_s)
-        c.send "#{a}_l=", l(a.to_s)
+        c.send "#{a}_l=", l(a.to_s.gsub(/_/, ' ').capitalize)
         c.send "#{a}=", l(a.to_s, a.to_s)
       end
     end.build
