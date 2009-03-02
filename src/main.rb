@@ -1,9 +1,8 @@
 # Mike Nicholaides
 # mike.nicholaides@gmail.com
 # CS338: GUI, Assignment 2
-
-$LOAD_PATH << File.dirname(__FILE__)
-$LOAD_PATH << File.dirname(__FILE__) + '/../lib/ruby'
+$LOAD_PATH <<  File.dirname(__FILE__)
+require 'set_load_path'
 
 require 'profligacy/swing'
 require 'profligacy/lel'
