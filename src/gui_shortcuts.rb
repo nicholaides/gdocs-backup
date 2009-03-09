@@ -17,6 +17,10 @@ module GUIShortcuts
     c.components + c.components.map{|c| all_components_of(c) }.flatten
   end
 
+  def a(&block)
+    { :action => block.to_proc }
+  end
+
   # convenience method for creating JLables
 	def l(text, name="")
     JLabel.new(text) #.tap{|jl| jl.name = name }
