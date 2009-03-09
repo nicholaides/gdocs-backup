@@ -20,7 +20,13 @@ include Java
 class Driver
   def initialize
     @main_window = MainWindow.new
-    prompt_for_login_info
+    
+    if ARGV.empty?
+      prompt_for_login_info
+    else
+      self.login_info = ARGV
+      p @gdocs
+    end
   end
   
   def login_info=(user_pass_arr)

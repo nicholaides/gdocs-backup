@@ -29,7 +29,7 @@ class LoginWindow
           c.login_l = l "Google Login"
           c.pass_l  = l "Password"
           c.login   = @login = t("login")
-          c.pass    = @pass  = t("pass")
+          c.pass    = @pass  = JPasswordField.new
         end.build,
         C
       )
