@@ -15,6 +15,8 @@ require 'login_window'
 require 'main_window'
 require 'gdocs'
 
+include Java
+
 class Driver
   def initialize
     @main_window = MainWindow.new
@@ -28,7 +30,7 @@ class Driver
   end
   
   def quit_unless_logged_in
-    exit unless @gdocs
+    java.lang.System.exit(0) if @gdocs.nil?
   end
   
   private

@@ -44,9 +44,10 @@ class LoginWindow
     
     def login
       @driver.login_info = [@login.text, @pass.text]
+      @dialog.hide
     end
     
     def cancel
-      java.lang.System.exit(0)
+      @driver.quit_unless_logged_in
     end
 end
