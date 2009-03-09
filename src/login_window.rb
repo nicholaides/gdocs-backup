@@ -4,20 +4,26 @@ class LoginWindow
   include Profligacy
   include GUIShortcuts
   
-  def initialize(driver, owner, err_message)
+  def initialize(driver, owner, err_message=nil)
     @driver = driver
-    create_dialog(owner)
+    create_dialog(owner, err_message)
     @dialog.pack
     @dialog.visible = true
   end
   
   private
-    def create_dialog(owner)
+    def create_dialog(owner, err_message=nil)
+      @dialog = JDialog.new owner, "Title", true
+      
+      if err_message
+        @dialog.add( panel(:msg) { |c,i| c.msg = l err_message }, N )
+      end
+      
       layout = "
         [ login_l | (100)login]
         [ pass_l  | pass]
       "
-      @dialog = JDialog.new owner, "Title", true
+      
       @dialog.add(
         Swing::LEL.new(JPanel, layout) do |c, i|
           c.login_l = l "Google Login"
