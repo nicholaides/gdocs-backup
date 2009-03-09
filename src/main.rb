@@ -19,24 +19,28 @@ include Java
 
 class Driver
   def initialize
-    @main_window = MainWindow.new
+    @main_window = MainWindow.new(self)
     
     if ARGV.empty?
       prompt_for_login_info
     else
       self.login_info = ARGV
-      p @gdocs
     end
   end
   
   def login_info=(user_pass_arr)
     @gdocs = GDocs.new(*user_pass_arr)
-  rescue
+  rescue NativeException
+    puts $!
     prompt_for_login_info("Could not log you in. Please try again")
   end
   
   def quit_unless_logged_in
     java.lang.System.exit(0) if @gdocs.nil?
+  end
+  
+  def backup_now
+    @gdocs.backup
   end
   
   private

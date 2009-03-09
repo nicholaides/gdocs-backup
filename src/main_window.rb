@@ -4,7 +4,8 @@ class MainWindow
   include Profligacy
   include GUIShortcuts
   
-  def initialize
+  def initialize(driver)
+    @driver = driver
     @main_frame = Swing::Build.new(JFrame, :x){}.build("Simple Draw") do |c|
       c.add backup_now_panel, N
       c.add main_panel, C
@@ -21,6 +22,8 @@ class MainWindow
       panel :backup_now, :last_backup do |c, i|
         c.backup_now  =  b("Backup Now")
         c.last_backup =  l("Last backup...")
+        
+        i.backup_now = a{ @driver.backup_now }
       end
     end
   
