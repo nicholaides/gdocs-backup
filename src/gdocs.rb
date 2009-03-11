@@ -48,9 +48,7 @@ class GDocs
           h[:authors]      = entry.authors.map{|a| "#{a.name} <#{a.email}>" }.join(', ')
         end
       end
-    
-      files.reject!{|file| file[:type] != 'document' }
-  
+      
       semaphore.synchronize do
         observer.update_status "Downloading documents" if observer
         observer.update_progress(0, files.size) if observer
@@ -101,7 +99,7 @@ class GDocs
             observer.update_progress(complete, total) if observer
             
             if @downloading_items.none?
-              observer.complete! "downloading files" if observer
+              observer.complete! if observer
               puts "All complete!"
             end
           end

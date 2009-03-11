@@ -27,6 +27,10 @@ class ProgressWindow
     end
   end
   
+  def complete!
+    @dialog.hide
+  end
+  
   private
     def create_dialog(owner)
       @dialog = JDialog.new owner, "Backing up Documents"
