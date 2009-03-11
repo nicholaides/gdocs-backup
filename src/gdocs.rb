@@ -10,21 +10,20 @@ require 'easy_thread'
 class GDocs
   DocumentListFeed = com.google.gdata.data.docs.DocumentListFeed
   DocsService = com.google.gdata.client.docs.DocsService 
-  def initialize(login, pass)
-    @service = DocsService.new("Docs service")
-    @service.set_user_credentials login, pass
-    @list_url = java.net.URL.new("http://docs.google.com/feeds/documents/private/full")
-    @auth_token = @service.getAuthTokenFactory.getAuthToken.getAuthorizationHeader(@list_url, "GET")
-  end
+  SpreadsheetService = com.google.gdata.client.spreadsheet.SpreadsheetService
   
-  def test
-    url = URI.parse "http://docs.google.com/feeds/download/documents/Export?docID=df3c8tkp_16cw3wv4&exportFormat=doc"
-    res = Net::HTTP.start(url.host) {|http|
-      http.get("/feeds/download/documents/Export?docID=df3c8tkp_16cw3wv4&exportFormat=doc", {'Authorization' => @auth_token, 'Accept' => '*/*' })
-    }
-    p url.path
-    p res
-    puts res.body
+  def initialize(login, pass)
+    @docs_service = DocsService.new("Docs service")
+    @docs_service.set_user_credentials login, pass
+    @docs_list_url = java.net.URL.new("http://docs.google.com/feeds/documents/private/full")
+    @docs_auth_token = @docs_service.getAuthTokenFactory.getAuthToken.getAuthorizationHeader(@docs_list_url, "GET")
+    puts @docs_auth_token
+    
+    @spreadsheet_service = SpreadsheetService.new("Spreadsheet service")
+    @spreadsheet_service.set_user_credentials login, pass
+    @spreadsheet_list_url = java.net.URL.new("http://spreadsheets.google.com/feeds/spreadsheets/private/full")
+    @spreadsheet_auth_token = @spreadsheet_service.getAuthTokenFactory.getAuthToken.getAuthorizationHeader(@spreadsheet_list_url, "GET")
+    puts @spreadsheet_auth_token
   end
   
   def backup(observer=nil)
@@ -36,7 +35,7 @@ class GDocs
         observer.update_progress(0, 0) if observer
       end
       
-      feed = @service.getFeed(@list_url, DocumentListFeed.java_class, nil)
+      feed = @docs_service.getFeed(@docs_list_url, DocumentListFeed.java_class, nil)
 
       files = feed.entries.map do |entry|
         {}.tap do |h|
@@ -61,28 +60,29 @@ class GDocs
     
       @downloading_items = [true]*files.size
     
-      puts @auth_token
-    
       files.each_with_index do |file, index|
         case file[:type]
           when 'document'
             file[:download_path]      = "/feeds/download/documents/Export?docID=#{file[:id]}&exportFormat=doc"
             file[:download_host]      = 'docs.google.com'
             file[:download_extension] = 'doc'
+            file[:auth_token]         = @docs_auth_token
           when 'presentation'
             file[:download_path]      = "/feeds/download/presentations/Export?docID=#{file[:id]}&exportFormat=ppt"
             file[:download_host]      = 'docs.google.com'
             file[:download_extension] = 'ppt'
+            file[:auth_token]         = @docs_auth_token
           when 'spreadsheet'
             file[:download_path]      = "/feeds/download/spreadsheets/Export?key=#{file[:id]}&fmcmd=4"
             file[:download_host]      = 'spreadsheets.google.com'
             file[:download_extension] = 'xls'
+            file[:auth_token]         = @spreadsheet_auth_token
         end
         
         thread(index, files, file, backup_dir) do |index, files, file, backup_dir|
           puts file[:download_path]
           res = Net::HTTP.start(file[:download_host]) {|http|
-            http.get(file[:download_path], {'Authorization' => @auth_token})
+            http.get(file[:download_path], {'Authorization' => file[:auth_token]})
           }
           puts res
           file = files[index]
