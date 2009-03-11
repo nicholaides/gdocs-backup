@@ -13,6 +13,8 @@ class GDocs
   DocsService = com.google.gdata.client.docs.DocsService 
   SpreadsheetService = com.google.gdata.client.spreadsheet.SpreadsheetService
   
+  BACKUPS_DIR = File.join(ENV["HOME"], 'gdocs-backups')
+  
   def initialize(login, pass)
     @docs_service = DocsService.new("Docs service")
     @docs_service.set_user_credentials login, pass
@@ -54,9 +56,8 @@ class GDocs
         observer.update_progress(0, files.size) if observer
       end
   
-      gdocs_dir  = File.join(ENV["HOME"], 'gdocs-backups')
-      backup_dir = File.join(gdocs_dir, Time.now.to_i.to_s)
-      Dir.mkdir(gdocs_dir)  unless File.exist? gdocs_dir
+      backup_dir = File.join(BACKUPS_DIR, Time.now.to_i.to_s)
+      Dir.mkdir(BACKUPS_DIR)  unless File.exist? BACKUPS_DIR
       Dir.mkdir(backup_dir) unless File.exist? backup_dir
     
       @downloading_items = [true]*files.size

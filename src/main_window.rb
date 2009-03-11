@@ -1,11 +1,14 @@
+require 'backup'
+
 class MainWindow
   include_package 'javax.swing'
   include_package 'java.awt'
   include Profligacy
   include GUIShortcuts
   
-  def initialize(driver)
+  def initialize(driver, backups)
     @driver = driver
+    @backups = backups
     @main_frame = Swing::Build.new(JFrame, :x){}.build("Simple Draw") do |c|
       c.add backup_now_panel, N
       c.add main_panel, C
@@ -79,9 +82,6 @@ class MainWindow
     end
   
     def backups_panel
-      @backups = ListModel.new
-      @backups << 'Stuff' << 'Grapes'
-    
       JPanel.new(BorderLayout.new).tap do |jp|
         jp.add title_panel("Previous Backups"), N
         jp.add JList.new(@backups), C

@@ -15,12 +15,16 @@ require 'login_window'
 require 'main_window'
 require 'progress_window'
 require 'gdocs'
+require 'backup'
 
 include Java
 
 class Driver
   def initialize
-    @main_window = MainWindow.new(self)
+    @backups = ListModel.new
+    Backup.list.each{|backup| @backups << backup }
+    
+    @main_window = MainWindow.new(self, @backups)
     
     if ARGV.empty?
       prompt_for_login_info
