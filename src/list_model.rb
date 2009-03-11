@@ -3,6 +3,7 @@
 # CS338: GUI, Assignment 2
 
 require 'java'
+require 'facets/core/facets'
 
 # listmodel for the jlist of shapes
 #
@@ -37,12 +38,14 @@ class ListModel
   
   # proxy to our @data array
   def method_missing(method, *args, &block)
-    @data.send(method, *args, &block)
+    ret_val = @data.send(method, *args, &block)
     
     if %w[<< []= clear delete delete_at delete_if fill insert push pop shift unshift replace].include? method.to_s or method.to_s =~ /\!$/
       @listeners.each do |listener|
         listener.contentsChanged(javax.swing.event.ListDataEvent.new(self, javax.swing.event.ListDataEvent::CONTENTS_CHANGED, 0, @data.size))
       end
     end
+      
+    ret_val
   end
 end

@@ -5,15 +5,19 @@ class Backup
   attr_accessor :timestamp
   
   def self.list
-    Dir["#{GDocs::BACKUPS_DIR}/*"].map{|dir| Backup.new(dir) }
+    Dir[ File.join(GDocs::BACKUPS_DIR,'*') ].map{|dir| Backup.new(dir) }.sort_by(&:timestamp).reverse
   end
   
   def initialize(dir)
-    @timestamp = Time.at(File.basename(dir).to_i)
+    @dir = dir
+  end
+  
+  def timestamp
+    @timestamp ||= Time.at(File.basename(@dir).to_i)
   end
   
   def to_s
-    did_when(@timestamp)
+    @to_s ||= did_when(timestamp)
   end
   
   private

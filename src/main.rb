@@ -20,9 +20,10 @@ require 'backup'
 include Java
 
 class Driver
+  attr :backups
+  
   def initialize
-    @backups = ListModel.new
-    Backup.list.each{|backup| @backups << backup }
+    load_backups
     
     @main_window = MainWindow.new(self, @backups)
     
@@ -47,6 +48,11 @@ class Driver
   def backup_now
     progress_window = ProgressWindow.new(self, @main_window.frame)
     @gdocs.backup(progress_window)
+  end
+  
+  def load_backups
+    @backups = ListModel.new
+    Backup.list.each{|backup| @backups << backup }
   end
   
   private

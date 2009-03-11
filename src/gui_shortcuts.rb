@@ -22,7 +22,7 @@ module GUIShortcuts
   end
 
   # convenience method for creating JLables
-	def l(text, name="")
+	def l(text="", name="")
     JLabel.new(text) #.tap{|jl| jl.name = name }
   end
 

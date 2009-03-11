@@ -9,11 +9,15 @@ class MainWindow
   def initialize(driver, backups)
     @driver = driver
     @backups = backups
+    puts @backups.inspect
+    puts @backups.any?
+    puts @backups.size
     @main_frame = Swing::Build.new(JFrame, :x){}.build("Simple Draw") do |c|
       c.add backup_now_panel, N
       c.add main_panel, C
     end
     @main_frame.default_close_operation = JFrame::EXIT_ON_CLOSE
+    update_backups
   end
   
   def frame
@@ -24,7 +28,7 @@ class MainWindow
     def backup_now_panel
       panel :backup_now, :last_backup do |c, i|
         c.backup_now  =  b("Backup Now")
-        c.last_backup =  l("Last backup...")
+        c.last_backup =  @last_backup_l = l("")
         
         i.backup_now = a{ @driver.backup_now }
       end
@@ -115,6 +119,17 @@ class MainWindow
       panel :preview do |c, i|
         c.preview = b "Preview Document"
         i.preview = { :action => proc{ puts "button clicked" } }
+      end
+    end
+    
+    def update_backups
+      puts "update backups"
+      if @backups.any?
+        puts "1"
+        @last_backup_l.text = "Last backed up " + @backups.first.to_s
+      else
+        puts "23"
+        @last_backup_l.text = "Not backed up yet (#{@backups.inspect})"
       end
     end
 end
