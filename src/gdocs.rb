@@ -6,6 +6,7 @@ require 'uri'
 require 'facets/core/facets'
 
 require 'easy_thread'
+require 'yaml'
 
 class GDocs
   DocumentListFeed = com.google.gdata.data.docs.DocumentListFeed
@@ -41,7 +42,7 @@ class GDocs
         {}.tap do |h|
           h[:type], h[:id] = entry.resource_id.split(':')
           h[:title]        = entry.title.text
-          h[:last_views]   = Time.at(entry.last_viewed.value) if entry.last_viewed
+          h[:last_viewed]  = Time.at(entry.last_viewed.value) if entry.last_viewed
           h[:can_edit?]    = entry.can_edit
           h[:categories]   = entry.categories.map{|c| c.label }.join(', ')
           h[:authors]      = entry.authors.map{|a| "#{a.name} <#{a.email}>" }.join(', ')
@@ -86,8 +87,13 @@ class GDocs
           }
           puts res
           file = files[index]
+          
           File.open( File.join(backup_dir, "#{file[:id]} - #{file[:title]}.#{file[:download_extension]}"), 'w' ) do |f|
             f.print res.body
+          end
+          
+          File.open( File.join(backup_dir, "#{file[:id]}.yml"), 'w' ) do |f|
+            f.print file.except(:auth_token).to_yaml
           end
         
           semaphore.synchronize do

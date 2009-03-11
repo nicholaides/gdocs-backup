@@ -42,19 +42,19 @@ class ProgressWindow
         end.build,
         C
       )
-      @dialog.add(
-        Swing::LEL.new(JPanel, '[ >cancel]') { |c,i|
-          c.cancel = b "Cancel"
-          i.cancel = a{ cancel }
-        }.build,
-        S
-      )
+      #@dialog.add(
+      #  Swing::LEL.new(JPanel, '[ >cancel]') { |c,i|
+      #    c.cancel = b "Cancel"
+      #    i.cancel = a{ cancel }
+      #  }.build,
+      #  S
+      #)
       
       @progress_bar.string_painted = true
     end
     
     def cancel
-      @driver.quit_unless_logged_in
+      
     end
   
 end
