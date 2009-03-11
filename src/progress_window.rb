@@ -29,6 +29,7 @@ class ProgressWindow
   
   def complete!
     @dialog.hide
+    @driver.backingup_complete!
   end
   
   private

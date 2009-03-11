@@ -17,7 +17,8 @@ class MainWindow
       c.add main_panel, C
     end
     @main_frame.default_close_operation = JFrame::EXIT_ON_CLOSE
-    update_backups
+    
+    @backups.contents_changed
   end
   
   def frame
@@ -28,7 +29,7 @@ class MainWindow
     def backup_now_panel
       panel :backup_now, :last_backup do |c, i|
         c.backup_now  =  b("Backup Now")
-        c.last_backup =  @last_backup_l = l("")
+        c.last_backup =  last_backup_label #@last_backup_l = l("")
         
         i.backup_now = a{ @driver.backup_now }
       end
@@ -84,6 +85,14 @@ class MainWindow
         }.to_listener(:list_data))
       end
     end
+    
+    def last_backup_label
+      @number_of_files_label = JLabel.new.tap do |label|
+        @backups.addListDataListener(proc{
+          label.text = last_backup_text
+        }.to_listener(:list_data))
+      end
+    end
   
     def backups_panel
       JPanel.new(BorderLayout.new).tap do |jp|
@@ -122,14 +131,13 @@ class MainWindow
       end
     end
     
-    def update_backups
-      puts "update backups"
+    
+    def last_backup_text
       if @backups.any?
-        puts "1"
-        @last_backup_l.text = "Last backed up " + @backups.first.to_s
+        "Last backed up " + @backups.first.to_s
       else
         puts "23"
-        @last_backup_l.text = "Not backed up yet (#{@backups.inspect})"
+        "Not backed up yet (#{@backups.inspect})"
       end
     end
 end

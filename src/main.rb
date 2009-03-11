@@ -23,6 +23,7 @@ class Driver
   attr :backups
   
   def initialize
+    @backups = ListModel.new
     load_backups
     
     @main_window = MainWindow.new(self, @backups)
@@ -50,8 +51,12 @@ class Driver
     @gdocs.backup(progress_window)
   end
   
+  def backingup_complete!
+    load_backups
+  end
+  
   def load_backups
-    @backups = ListModel.new
+    @backups.clear
     Backup.list.each{|backup| @backups << backup }
   end
   
