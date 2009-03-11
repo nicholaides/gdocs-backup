@@ -5,7 +5,7 @@ require 'net/http'
 require 'uri'
 require 'facets/core/facets'
 
-require 'thread'
+require 'easy_thread'
 
 class GDocs
   DocumentListFeed = com.google.gdata.data.docs.DocumentListFeed
@@ -27,69 +27,84 @@ class GDocs
     puts res.body
   end
   
-  def backup
-    feed = @service.getFeed(@list_url, DocumentListFeed.java_class, nil)
+  def backup(observer=nil)
+    semaphore = Mutex.new
+    
+    thread do
+      semaphore.synchronize do
+        observer.update_status "Getting list of files" if observer
+        observer.update_progress(0, 0) if observer
+      end
+      
+      feed = @service.getFeed(@list_url, DocumentListFeed.java_class, nil)
 
-    files = feed.entries.map do |entry|
-      {}.tap do |h|
-        h[:type], h[:id] = entry.resource_id.split(':')
-        h[:title]        = entry.title.text
-        h[:last_views]   = Time.at(entry.last_viewed.value) if entry.last_viewed
-        h[:can_edit?]    = entry.can_edit
-        h[:categories]   = entry.categories.map{|c| c.label }.join(', ')
-        h[:authors]      = entry.authors.map{|a| "#{a.name} <#{a.email}>" }.join(', ')
+      files = feed.entries.map do |entry|
+        {}.tap do |h|
+          h[:type], h[:id] = entry.resource_id.split(':')
+          h[:title]        = entry.title.text
+          h[:last_views]   = Time.at(entry.last_viewed.value) if entry.last_viewed
+          h[:can_edit?]    = entry.can_edit
+          h[:categories]   = entry.categories.map{|c| c.label }.join(', ')
+          h[:authors]      = entry.authors.map{|a| "#{a.name} <#{a.email}>" }.join(', ')
+        end
       end
-    end
     
-    files.reject!{|file| file[:type] != 'document' }
+      files.reject!{|file| file[:type] != 'document' }
   
-    gdocs_dir  = File.join(ENV["HOME"], 'gdocs-backups')
-    backup_dir = File.join(gdocs_dir, Time.now.to_i.to_s)
-    Dir.mkdir(gdocs_dir)  unless File.exist? gdocs_dir
-    Dir.mkdir(backup_dir) unless File.exist? backup_dir
-    
-    @downloading_items = [true]*files.size
-    
-    puts @auth_token
-    
-    files.each_with_index do |file, index|
-      case file[:type]
-        when 'document'
-          file[:download_path]      = "/feeds/download/documents/Export?docID=#{file[:id]}&exportFormat=doc"
-          file[:download_host]      = 'docs.google.com'
-          file[:download_extension] = 'doc'
-        when 'presentation'
-          file[:download_path]      = "/feeds/download/presentations/Export?docID=#{file[:id]}&exportFormat=ppt"
-          file[:download_host]      = 'docs.google.com'
-          file[:download_extension] = 'ppt'
-        when 'spreadsheet'
-          file[:download_path]      = "/feeds/download/spreadsheets/Export?key=#{file[:id]}&fmcmd=4"
-          file[:download_host]      = 'spreadsheets.google.com'
-          file[:download_extension] = 'xls'
+      semaphore.synchronize do
+        observer.update_status "Downloading documents" if observer
+        observer.update_progress(0, files.size) if observer
       end
-      
-      semaphore = Mutex.new
-      
-      Thread.start(index, files, backup_dir) do |index, files, backup_dir|
-        puts file[:download_path]
-        file = files[index]
-        res = Net::HTTP.start(file[:download_host]) {|http|
-          http.get(file[:download_path], {'Authorization' => @auth_token})
-        }
-        puts res
-        file = files[index]
-        File.open( File.join(backup_dir, "#{file[:id]} - #{file[:title]}.#{file[:download_extension]}"), 'w' ) do |f|
-          f.print res.body
+  
+      gdocs_dir  = File.join(ENV["HOME"], 'gdocs-backups')
+      backup_dir = File.join(gdocs_dir, Time.now.to_i.to_s)
+      Dir.mkdir(gdocs_dir)  unless File.exist? gdocs_dir
+      Dir.mkdir(backup_dir) unless File.exist? backup_dir
+    
+      @downloading_items = [true]*files.size
+    
+      puts @auth_token
+    
+      files.each_with_index do |file, index|
+        case file[:type]
+          when 'document'
+            file[:download_path]      = "/feeds/download/documents/Export?docID=#{file[:id]}&exportFormat=doc"
+            file[:download_host]      = 'docs.google.com'
+            file[:download_extension] = 'doc'
+          when 'presentation'
+            file[:download_path]      = "/feeds/download/presentations/Export?docID=#{file[:id]}&exportFormat=ppt"
+            file[:download_host]      = 'docs.google.com'
+            file[:download_extension] = 'ppt'
+          when 'spreadsheet'
+            file[:download_path]      = "/feeds/download/spreadsheets/Export?key=#{file[:id]}&fmcmd=4"
+            file[:download_host]      = 'spreadsheets.google.com'
+            file[:download_extension] = 'xls'
         end
         
-        semaphore.synchronize do
-          @downloading_items[index] = false
-          STDERR.puts "completed #{ @downloading_items.reject{|i| i }.size }/#{@downloading_items.size}"
-          STDERR.puts "waiting for: "
-          @downloading_items.each_with_index{|item, index|
-            p files[index][:title] if item
+        thread(index, files, file, backup_dir) do |index, files, file, backup_dir|
+          puts file[:download_path]
+          res = Net::HTTP.start(file[:download_host]) {|http|
+            http.get(file[:download_path], {'Authorization' => @auth_token})
           }
-          puts "All complete!" if @downloading_items.none?
+          puts res
+          file = files[index]
+          File.open( File.join(backup_dir, "#{file[:id]} - #{file[:title]}.#{file[:download_extension]}"), 'w' ) do |f|
+            f.print res.body
+          end
+        
+          semaphore.synchronize do
+            @downloading_items[index] = false
+            complete = @downloading_items.reject{|i| i }.size
+            total = @downloading_items.size
+            STDERR.puts "completed #{ complete }/#{ total }"
+            
+            observer.update_progress(complete, total) if observer
+            
+            if @downloading_items.none?
+              observer.complete! "downloading files" if observer
+              puts "All complete!"
+            end
+          end
         end
       end
     end

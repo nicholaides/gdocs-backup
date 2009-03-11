@@ -13,6 +13,7 @@ require 'list_model'
 
 require 'login_window'
 require 'main_window'
+require 'progress_window'
 require 'gdocs'
 
 include Java
@@ -40,7 +41,8 @@ class Driver
   end
   
   def backup_now
-    @gdocs.backup
+    progress_window = ProgressWindow.new(self, @main_window.frame)
+    @gdocs.backup(progress_window)
   end
   
   private
