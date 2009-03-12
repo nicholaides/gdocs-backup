@@ -49,11 +49,13 @@ module GUIShortcuts
   end
   
   def two_column_panel(*args)
+    @components ||= {}
+    
     layout = two_column_layout(*args)
     Swing::LEL.new JPanel, layout do |c,i|
       args.each do |a|
-        c.send "#{a}_l=", l(a.to_s.gsub(/_/, ' ').capitalize)
-        c.send "#{a}=", l(a.to_s, a.to_s)
+        @components["#{a}_label"] = c.send("#{a}_l=", l(a.to_s.gsub(/_/, ' ').capitalize))        
+        @components["#{a}_field"] = c.send("#{a}=", l(a.to_s, a.to_s))
       end
     end.build
   end

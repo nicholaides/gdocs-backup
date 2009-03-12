@@ -23,5 +23,14 @@ module GDocsBackup
         @attributes[method]
       end
     end
+    
+    #have to override these
+    def id
+      @attributes[:id]
+    end
+    
+    def type
+      @attributes[:type]
+    end
   end
 end

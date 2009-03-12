@@ -73,7 +73,15 @@ class MainWindow
     def backup_files
       JPanel.new(BorderLayout.new).tap do |jp|
         jp.add number_of_files_label, N
-        jp.add JList.new(@files), C
+        jp.add backup_files_list, C
+      end
+    end
+    
+    def backup_files_list
+      @files_list = JList.new(@files).tap do |list|
+        list.addListSelectionListener(proc{|sym, args|
+          change_file_pane
+        }.to_listener(:list_selection))
       end
     end
   
@@ -153,6 +161,14 @@ class MainWindow
       
       @files.clear 
       @files.concat current_backup.files
+    end
+    
+    def change_file_pane
+      @components["type_field"].text = current_file.type
+    end
+    
+    def current_file
+      @files[@files_list.get_selected_index]
     end
     
     def current_backup
