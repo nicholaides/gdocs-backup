@@ -131,12 +131,12 @@ class MainWindow
   
     def file_title
       title_panel("File title") do |label|
-        label.name = "file_title"
+        @file_title_field = label
       end
     end
   
     def file_details
-      two_column_panel(:type, :owner, :shared_with, :size, :created_at, :last_modified)
+      two_column_panel(:type, :author, :size, :last_viewed, :can_edit)
     end
     
     def file_preview
@@ -165,6 +165,10 @@ class MainWindow
     
     def change_file_pane
       @components["type_field"].text = current_file.type
+      @components["author_field"].text = current_file.authors
+      @components["last_viewed_field"].text = current_file.last_viewed.try(:time_ago_human) || ""
+      @components["can_edit_field"].text = current_file.can_edit? ? 'yes' : 'no'
+      @file_title_field.text = current_file.title
     end
     
     def current_file
