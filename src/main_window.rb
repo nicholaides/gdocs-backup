@@ -58,16 +58,7 @@ class MainWindow
     end
   
     def backup_details_fields
-      layout = "
-        [date_l | date]
-        [size_l | size]
-      "
-      Swing::LEL.new JPanel, layout do |c,i|
-        c.date_l = @date_label = l('Date')
-        c.date = @date_field = l('...')
-        c.size_l = l('Size')
-        c.size = @size_field = l('...')
-      end.build
+      two_column_panel(:date, :total_size)
     end
   
     def backup_files
@@ -106,7 +97,6 @@ class MainWindow
         jp.add title_panel("Previous Backups"), N
         jp.add backups_list, C
         jp.add( panel(:restore, :delete) { |c,i|
-          c.restore = b "Restore"
           c.delete  = b "Delete"
         }, S)
       end
@@ -156,8 +146,8 @@ class MainWindow
     end
     
     def change_backup_pane
-      @date_field.text = current_backup.timestamp.strftime Time::FORMAT[:long]
-      @size_field.text = current_backup.size.to_human_file_size
+      @components["date_field"].text = current_backup.timestamp.strftime Time::FORMAT[:long]
+      @components["total_size_field"].text = current_backup.size.to_human_file_size
       
       @files.clear 
       @files.concat current_backup.files
