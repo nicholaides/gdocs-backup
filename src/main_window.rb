@@ -10,9 +10,8 @@ class MainWindow
   def initialize(driver, backups)
     @driver = driver
     @backups = backups
-    puts @backups.inspect
-    puts @backups.any?
-    puts @backups.size
+    @files = ListModel.new
+    
     @main_frame = Swing::Build.new(JFrame, :x){}.build("Simple Draw") do |c|
       c.add backup_now_panel, N
       c.add main_panel, C
@@ -72,7 +71,6 @@ class MainWindow
     end
   
     def backup_files
-      @files = ListModel.new
       JPanel.new(BorderLayout.new).tap do |jp|
         jp.add number_of_files_label, N
         jp.add JList.new(@files), C
@@ -109,7 +107,7 @@ class MainWindow
     def backups_list
       @backups_list = JList.new(@backups).tap do |list|
         list.addListSelectionListener(proc{|sym, args|
-          changeBackupPane
+          change_backup_pane
         }.to_listener(:list_selection))
       end
     end
@@ -149,9 +147,12 @@ class MainWindow
       end
     end
     
-    def changeBackupPane
+    def change_backup_pane
       @date_field.text = current_backup.timestamp.strftime Time::FORMAT[:long]
       @size_field.text = current_backup.size.to_human
+      
+      @files.clear 
+      @files.concat current_backup.files
     end
     
     def current_backup

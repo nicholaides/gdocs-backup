@@ -57,7 +57,7 @@ class Driver
   
   def load_backups
     @backups.clear
-    Backup.list.each{|backup| @backups << backup }
+    @backups.concat Backup.list
   end
   
   private
