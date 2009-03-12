@@ -262,6 +262,7 @@ class MainWindow
     end
     
     def change_backup_pane
+      @files_list.clear_selection
       if current_backup
         @components["date_field"].text = current_backup.timestamp.strftime Time::FORMAT[:long]
         @components["total_size_field"].text = current_backup.size.to_human_file_size
