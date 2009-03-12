@@ -17,6 +17,7 @@ class MainWindow
       c.add backup_now_panel, N
       c.add main_panel, C
     end
+    @main_frame.pack
     @main_frame.default_close_operation = JFrame::EXIT_ON_CLOSE
     
     @backups.contents_changed
@@ -51,9 +52,10 @@ class MainWindow
   
     def backup_panel
       JPanel.new(BorderLayout.new).tap do |jp|
-        jp.add title_panel("Backup Details"), N
+        jp.add title_panel("<html><b><font size='4'>Details"), N
         jp.add backup_details, C
         jp.border = EmptyBorder.new(10,10,10,10)
+        jp.preferred_size = d(200,300)
       end
     end
   
@@ -88,7 +90,7 @@ class MainWindow
     def number_of_files_label
       @number_of_files_label = JLabel.new.tap do |label|
         @files.addListDataListener(proc{
-          label.text = "#{@files.size} files backed up"
+          label.text = "<html><i>#{@files.size} files backed up"
         }.to_listener(:list_data))
       end
     end
@@ -103,12 +105,13 @@ class MainWindow
   
     def backups_panel
       JPanel.new(BorderLayout.new).tap do |jp|
-        jp.add title_panel("Previous Backups"), N
+        jp.add title_panel("<html><b><font size='5'>Previous Backups"), N
         jp.add backups_list, C
         jp.add( panel(:restore, :delete) { |c,i|
           c.delete = b "Delete"
           i.delete = a{ delete_backups } 
         }, S)
+        jp.preferred_size = d(200,300)
       end
     end
     

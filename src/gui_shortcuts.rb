@@ -45,7 +45,7 @@ module GUIShortcuts
   end
   
   def two_column_layout(*args)
-    args.map{|a| "[<#{a}_l|<#{a}]"}.join
+    args.map{|a| "[<#{a}_l|<*#{a}]"}.join
   end
   
   def two_column_panel(*args)
@@ -54,7 +54,7 @@ module GUIShortcuts
     layout = two_column_layout(*args)
     Swing::LEL.new JPanel, layout do |c,i|
       args.each do |a|
-        @components["#{a}_label"] = c.send("#{a}_l=", l(a.to_s.gsub(/_/, ' ').capitalize))        
+        @components["#{a}_label"] = c.send("#{a}_l=",  l( "<html><b>" + a.to_s.gsub(/_/, ' ').capitalize ))        
         @components["#{a}_field"] = c.send("#{a}=", l(a.to_s, a.to_s))
       end
     end.build
