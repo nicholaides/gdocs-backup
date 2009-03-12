@@ -42,10 +42,11 @@ class MainWindow
     end
   
     def main_panel
-      JPanel.new(BorderLayout.new).tap do |jp|
-        jp.add backups_panel, W
-        jp.add backup_panel, C
-        jp.add file_panel, E
+      JPanel.new.tap do |jp|
+        jp.layout = BoxLayout.new(jp, BoxLayout::X_AXIS)
+        jp.add backups_panel #, W
+        jp.add backup_panel  #, C
+        jp.add file_panel    #, E
         jp.border = EmptyBorder.new(10,10,10,10)
       end
     end
@@ -55,7 +56,7 @@ class MainWindow
         jp.add title_panel("<html><b><font size='4'>Details"), N
         jp.add backup_details, C
         jp.border = EmptyBorder.new(10,10,10,10)
-        jp.preferred_size = d(200,300)
+        jp.preferred_size = d(300, 400)
       end
     end
   
@@ -63,6 +64,7 @@ class MainWindow
       JPanel.new(BorderLayout.new).tap do |jp|
         jp.add backup_details_fields, N
         jp.add backup_files, C
+        jp.preferred_size = d(400, 400)
       end
     end
   
@@ -111,7 +113,7 @@ class MainWindow
           c.delete = b "Delete"
           i.delete = a{ delete_backups } 
         }, S)
-        jp.preferred_size = d(200,300)
+        jp.preferred_size = d(175,300)
       end
     end
     
@@ -131,12 +133,18 @@ class MainWindow
         jp.add file_title
         jp.add file_details
         jp.add file_preview
+        jp.preferred_size = d(300, 400)
       end
     end
   
-    def file_title
-      title_panel("File title") do |label|
-        @file_title_field = label
+    def file_title  
+      JPanel.new.tap do |jp|
+        JTextArea.new.tap do |ta|
+          @file_title_field = ta
+          jp.add ta
+          ta.line_wrap = true
+          ta.maximum_size = d(100, 300)
+        end
       end
     end
   
