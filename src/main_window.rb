@@ -84,11 +84,31 @@ class MainWindow
     end
   
     def backup_panel
-      JPanel.new(BorderLayout.new).tap do |jp|
-        jp.add title_panel("<html><b><font size='4'>Details"), N
-        jp.add backup_details, C
-        jp.border = EmptyBorder.new(10,10,10,10)
-        jp.preferred_size = d(300, 400)
+      JPanel.new.tap do |deck|
+        deck.layout = CardLayout.new
+        @backup_deck = deck
+        
+        JPanel.new(BorderLayout.new).tap do |jp|
+          deck.add jp, "panel"
+          jp.add title_panel("<html><b><font size='4'>Details"), N
+          jp.add backup_details, C
+          jp.border = EmptyBorder.new(10,10,10,10)
+          jp.preferred_size = d(300, 400)
+        end
+        
+        JPanel.new.tap do |jp|
+          deck.add jp, "empty"
+          jp.add( Swing::LEL.new JPanel, '[icon|<text]' do |c,i|
+            c.icon = JLabel.new(ImageIcon.new('src/icons/arrow_left.png'))
+            c.text = JTextArea.new.tap do |ta|
+              ta.text = "\nSelect a backup to see more info"
+              ta.font = Font.new("Sans Serif", Font::BOLD, 16)
+              ta.background = jp.background
+            end
+          end.build)
+          
+          deck.get_layout.show deck, "empty"
+        end
       end
     end
   
@@ -208,28 +228,37 @@ class MainWindow
       
         @files.clear 
         @files.concat current_backup.files
+        
+        @backup_deck.get_layout.show @backup_deck, "panel"
       else
+        @backup_deck.get_layout.show @backup_deck, "empty"
         #show other deck?
       end
     end
     
     def change_file_pane
-      @components["type_field"].text = current_file.type
-      @components["author_field"].text = current_file.authors
-      @components["last_viewed_field"].text = current_file.last_viewed.try(:time_ago_human) || "never"
-      @components["can_edit_field"].text = current_file.can_edit? ? 'yes' : 'no'
-      @components["size_field"].text = current_file.size.to_human_file_size
+      if current_file
+        @components["type_field"].text = current_file.type
+        @components["author_field"].text = current_file.authors
+        @components["last_viewed_field"].text = current_file.last_viewed.try(:time_ago_human) || "never"
+        @components["can_edit_field"].text = current_file.can_edit? ? 'yes' : 'no'
+        @components["size_field"].text = current_file.size.to_human_file_size
       
-      @file_title_field.text = current_file.title
-      @title_icon_label.icon = FILE_ICONS[current_file.type]
+        @file_title_field.text = current_file.title
+        @title_icon_label.icon = FILE_ICONS[current_file.type]
+      else
+        #show other deck?
+      end
     end
     
     def current_file
-      @files[@files_list.get_selected_index]
+      i = @files_list.get_selected_index
+      i >= 0 ? @files[i] : nil
     end
     
     def current_backup
-      @backups[@backups_list.get_selected_index]
+      i = @backups_list.get_selected_index
+      i >= 0 ? @backups[i] : nil
     end
     
     def delete_backups
