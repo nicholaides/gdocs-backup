@@ -44,7 +44,7 @@ class GDocs
         {}.tap do |h|
           h[:type], h[:id] = entry.resource_id.split(':')
           h[:title]        = entry.title.text
-          h[:last_viewed]  = Time.at(entry.last_viewed.value) if entry.last_viewed
+          h[:last_viewed]  = Time.at(entry.last_viewed.value / 1000) if entry.last_viewed
           h[:can_edit?]    = entry.can_edit
           h[:categories]   = entry.categories.map{|c| c.label }.join(', ')
           h[:authors]      = entry.authors.map{|a| "#{a.name} <#{a.email}>" }.join(', ')

@@ -63,7 +63,7 @@ class MainWindow
         [size_l | size]
       "
       Swing::LEL.new JPanel, layout do |c,i|
-        c.date_l = l('Date')
+        c.date_l = @date_label = l('Date')
         c.date = @date_field = l('...')
         c.size_l = l('Size')
         c.size = @size_field = l('...')
@@ -97,11 +97,19 @@ class MainWindow
     def backups_panel
       JPanel.new(BorderLayout.new).tap do |jp|
         jp.add title_panel("Previous Backups"), N
-        jp.add JList.new(@backups), C
+        jp.add backups_list, C
         jp.add( panel(:restore, :delete) { |c,i|
           c.restore = b "Restore"
           c.delete  = b "Delete"
         }, S)
+      end
+    end
+    
+    def backups_list
+      @backups_list = JList.new(@backups).tap do |list|
+        list.addListSelectionListener(proc{|sym, args|
+          changeBackupPane
+        }.to_listener(:list_selection))
       end
     end
   
@@ -131,7 +139,6 @@ class MainWindow
       end
     end
     
-    
     def last_backup_text
       if @backups.any?
         "Last backed up " + @backups.first.to_s
@@ -139,5 +146,13 @@ class MainWindow
         puts "23"
         "Not backed up yet (#{@backups.inspect})"
       end
+    end
+    
+    def changeBackupPane
+      @date_field.text = current_backup.timestamp.strftime Time::FORMAT[:long] 
+    end
+    
+    def current_backup
+      @backups[@backups_list.get_selected_index]
     end
 end
