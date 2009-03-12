@@ -99,11 +99,14 @@ class MainWindow
         JPanel.new.tap do |jp|
           deck.add jp, "empty"
           jp.add( Swing::LEL.new JPanel, '[icon|<text]' do |c,i|
-            c.icon = JLabel.new(ImageIcon.new('src/icons/arrow_left.png'))
+            c.icon = JLabel.new(ImageIcon.new('src/icons/arrow_left.png')).tap do |label|
+              label.border = EmptyBorder.new(100,0,0,0)
+            end
             c.text = JTextArea.new.tap do |ta|
               ta.text = "\nSelect a backup to see more info"
               ta.font = Font.new("Sans Serif", Font::BOLD, 16)
               ta.background = jp.background
+              ta.border = EmptyBorder.new(86,0,0,0)
             end
           end.build)
           
