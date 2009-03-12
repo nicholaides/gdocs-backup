@@ -20,7 +20,7 @@ class LoginWindow
       end
       
       layout = "
-        [ login_l | (100)login]
+        [ login_l | (200)login]
         [ pass_l  | pass]
       "
       

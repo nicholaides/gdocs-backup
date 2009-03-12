@@ -164,10 +164,13 @@ class MainWindow
       JPanel.new(BorderLayout.new).tap do |jp|
         jp.add title_panel("<html><b><font size='5'>Previous Backups"), N
         jp.add backups_list, C
-        jp.add( panel(:restore, :delete) { |c,i|
+        
+        delete_panel = Swing::Build.new(JPanel, :delete){ |c,i|
           c.delete = b "Delete"
-          i.delete = a{ delete_backups } 
-        }, S)
+          i.delete = a{ delete_backups }
+        }.build
+        delete_panel.layout = FlowLayout.new(FlowLayout::RIGHT)
+        jp.add(delete_panel, S)
         jp.preferred_size = d(175,300)
       end
     end
