@@ -8,7 +8,16 @@ module GDocsBackup
       @id = File.basename(file_name).split(' - ').first 
       
       @yaml_file = File.join(File.dirname(@file_name), "#{@id}.yml")
+      @pdf_file = File.join(File.dirname(@file_name), "#{@id}.pdf")
       @attributes = YAML.load(File.new(@yaml_file))
+    end
+    
+    def preview?
+      File.exist? @pdf_file
+    end
+    
+    def preview_path
+      @pdf_file
     end
     
     def size

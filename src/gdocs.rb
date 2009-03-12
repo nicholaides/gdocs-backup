@@ -66,11 +66,13 @@ class GDocs
         case file[:type]
           when 'document'
             file[:download_path]      = "/feeds/download/documents/Export?docID=#{file[:id]}&exportFormat=doc"
+            file[:download_preview]   = "/feeds/download/documents/Export?docID=#{file[:id]}&exportFormat=pdf"
             file[:download_host]      = 'docs.google.com'
             file[:download_extension] = 'doc'
             file[:auth_token]         = @docs_auth_token
           when 'presentation'
             file[:download_path]      = "/feeds/download/presentations/Export?docID=#{file[:id]}&exportFormat=ppt"
+            file[:download_preview]   = "/feeds/download/presentations/Export?docID=#{file[:id]}&exportFormat=pdf"
             file[:download_host]      = 'docs.google.com'
             file[:download_extension] = 'ppt'
             file[:auth_token]         = @docs_auth_token
@@ -83,16 +85,26 @@ class GDocs
         
         thread(index, files, file, backup_dir) do |index, files, file, backup_dir|
           puts file[:download_path]
+          
           res = Net::HTTP.start(file[:download_host]) {|http|
             http.get(file[:download_path], {'Authorization' => file[:auth_token]})
           }
-          puts res
-          file = files[index]
           
           File.open( File.join(backup_dir, "#{file[:id]} - #{file[:title]}.#{file[:download_extension]}"), 'w' ) do |f|
             f.print res.body
           end
           
+          
+          if file[:download_preview]
+            res = Net::HTTP.start(file[:download_host]) {|http|
+              http.get(file[:download_preview], {'Authorization' => file[:auth_token]})
+            }
+
+            File.open( File.join(backup_dir, file[:id] + '.pdf'), 'w' ) do |f|
+              f.print res.body
+            end
+          end
+                    
           File.open( File.join(backup_dir, "#{file[:id]}.yml"), 'w' ) do |f|
             f.print file.except(:auth_token).to_yaml
           end

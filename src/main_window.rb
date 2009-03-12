@@ -240,9 +240,18 @@ class MainWindow
     end
     
     def file_preview
-      panel :preview do |c, i|
-        c.preview = b "Preview Document"
-        i.preview = { :action => proc{ puts "button clicked" } }
+      JPanel.new.tap do |deck|
+        deck.layout = CardLayout.new
+        @preview_deck = deck
+        preview_panel = panel :preview do |c, i|
+          c.preview = b "Preview Document"
+          i.preview = a{ show_preview }
+        end
+        
+        deck.add preview_panel, 'panel'
+        
+        
+        deck.add JPanel.new, 'empty'
       end
     end
     
@@ -279,6 +288,8 @@ class MainWindow
         @file_title_field.text = current_file.title
         @title_icon_label.icon = FILE_ICONS[current_file.type]
         @file_deck.get_layout.show @file_deck, "panel"
+        
+        @preview_deck.get_layout.show @preview_deck, (current_file.preview? ? "panel" : "empty")
       else
         @file_deck.get_layout.show @file_deck, "empty"
       end
@@ -299,5 +310,10 @@ class MainWindow
         @driver.delete_backups @backups_list.selected_indices.map{|i| @backups[i] }
         @backups_list.clear_selection
       end
+    end
+    
+    def show_preview
+      require 'preview_window'
+      PreviewWindow.new(current_file)
     end
 end
