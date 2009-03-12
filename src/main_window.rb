@@ -4,6 +4,7 @@ require 'extensions'
 class MainWindow
   include_package 'javax.swing'
   include_package 'java.awt'
+  include_package 'javax.swing.border'
   include Profligacy
   include GUIShortcuts
   
@@ -40,6 +41,7 @@ class MainWindow
         jp.add backups_panel, W
         jp.add backup_panel, C
         jp.add file_panel, E
+        jp.border = EmptyBorder.new(10,10,10,10)
       end
     end
   
@@ -47,6 +49,7 @@ class MainWindow
       JPanel.new(BorderLayout.new).tap do |jp|
         jp.add title_panel("Backup Details"), N
         jp.add backup_details, C
+        jp.border = EmptyBorder.new(10,10,10,10)
       end
     end
   

@@ -47,7 +47,7 @@ class GDocs
           h[:last_viewed]  = Time.at(entry.last_viewed.value / 1000) if entry.last_viewed
           h[:can_edit?]    = entry.can_edit
           h[:categories]   = entry.categories.map{|c| c.label }.join(', ')
-          h[:authors]      = entry.authors.map{|a| "#{a.name} <#{a.email}>" }.join(', ')
+          h[:authors]      = entry.authors.map(&:name).join(', ')
         end
       end
       
