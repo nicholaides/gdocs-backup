@@ -30,7 +30,7 @@ class MainWindow
     def backup_now_panel
       panel :backup_now, :last_backup do |c, i|
         c.backup_now  =  b("Backup Now")
-        c.last_backup =  last_backup_label #@last_backup_l = l("")
+        c.last_backup =  last_backup_label
         
         i.backup_now = a{ @driver.backup_now }
       end
@@ -72,11 +72,13 @@ class MainWindow
     end
     
     def backup_files_list
-      @files_list = JList.new(@files).tap do |list|
-        list.addListSelectionListener(proc{|sym, args|
-          change_file_pane
-        }.to_listener(:list_selection))
-      end
+      JScrollPane.new(
+        @files_list = JList.new(@files).tap do |list|
+          list.addListSelectionListener(proc{|sym, args|
+            change_file_pane
+          }.to_listener(:list_selection))
+        end
+      )
     end
   
     def number_of_files_label
@@ -106,11 +108,13 @@ class MainWindow
     end
     
     def backups_list
-      @backups_list = JList.new(@backups).tap do |list|
-        list.addListSelectionListener(proc{|sym, args|
-          change_backup_pane
-        }.to_listener(:list_selection))
-      end
+      JScrollPane.new(
+        @backups_list = JList.new(@backups).tap do |list|
+          list.addListSelectionListener(proc{|sym, args|
+            change_backup_pane
+          }.to_listener(:list_selection))
+        end
+      )
     end
   
     def file_panel
@@ -159,7 +163,7 @@ class MainWindow
     def change_file_pane
       @components["type_field"].text = current_file.type
       @components["author_field"].text = current_file.authors
-      @components["last_viewed_field"].text = current_file.last_viewed.try(:time_ago_human) || ""
+      @components["last_viewed_field"].text = current_file.last_viewed.try(:time_ago_human) || "never"
       @components["can_edit_field"].text = current_file.can_edit? ? 'yes' : 'no'
       @components["size_field"].text = current_file.size.to_human_file_size
       @file_title_field.text = current_file.title
