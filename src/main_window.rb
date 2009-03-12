@@ -8,6 +8,12 @@ class MainWindow
   include Profligacy
   include GUIShortcuts
   
+  FILE_ICONS = {
+    'document'     => ImageIcon.new('src/icons/file_doc_large.png'),
+    'spreadsheet'  => ImageIcon.new('src/icons/file_xls_large.png'),
+    'presentation' => ImageIcon.new('src/icons/file_ppt_large.png'),
+  }
+  
   def initialize(driver, backups)
     @driver = driver
     @backups = backups
@@ -139,9 +145,10 @@ class MainWindow
   
     def file_title  
       Swing::LEL.new JPanel, '[^icon|<^*title]' do |c,i|
-        puts java.io.File.new(".").getCanonicalPath
-        
-        c.icon = JLabel.new(ImageIcon.new('src/icons/file_doc_large.png'))
+        c.icon = JLabel.new.tap do |label|
+          label.icon = FILE_ICONS['document']
+          @title_icon_label = label
+        end
         c.title = JTextArea.new.tap do |ta|
           @file_title_field = ta
           ta.line_wrap = true
@@ -185,7 +192,9 @@ class MainWindow
       @components["last_viewed_field"].text = current_file.last_viewed.try(:time_ago_human) || "never"
       @components["can_edit_field"].text = current_file.can_edit? ? 'yes' : 'no'
       @components["size_field"].text = current_file.size.to_human_file_size
+      
       @file_title_field.text = current_file.title
+      @title_icon_label.icon = FILE_ICONS[current_file.type]
     end
     
     def current_file
