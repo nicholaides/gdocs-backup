@@ -45,7 +45,7 @@ class ListModel
   def method_missing(method, *args, &block)
     ret_val = @data.send(method, *args, &block)
     
-    if %w[<< []= clear delete delete_at delete_if fill insert push pop shift unshift replace].include? method.to_s or method.to_s =~ /\!$/
+    if %w[<< []= clear concat delete delete_at delete_if fill insert push pop shift unshift replace].include? method.to_s or method.to_s =~ /\!$/
       contents_changed
     end
       
