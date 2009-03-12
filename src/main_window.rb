@@ -157,7 +157,7 @@ class MainWindow
     
     def change_backup_pane
       @date_field.text = current_backup.timestamp.strftime Time::FORMAT[:long]
-      @size_field.text = current_backup.size.to_human
+      @size_field.text = current_backup.size.to_human_file_size
       
       @files.clear 
       @files.concat current_backup.files
@@ -168,6 +168,7 @@ class MainWindow
       @components["author_field"].text = current_file.authors
       @components["last_viewed_field"].text = current_file.last_viewed.try(:time_ago_human) || ""
       @components["can_edit_field"].text = current_file.can_edit? ? 'yes' : 'no'
+      @components["size_field"].text = current_file.size.to_human_file_size
       @file_title_field.text = current_file.title
     end
     

@@ -11,6 +11,10 @@ module GDocsBackup
       @attributes = YAML.load(File.new(@yaml_file))
     end
     
+    def size
+      File.size?(@file_name) || 0
+    end
+    
     def to_s
       title
     end

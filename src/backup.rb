@@ -26,7 +26,7 @@ class Backup
   end
   
   def size
-    @size ||= file_names.map{|file_name| File.size?(file_name) }.compact.sum
+    @size ||= files.map(&:size).sum
   end
   
   private

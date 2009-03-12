@@ -1,5 +1,5 @@
 class Numeric
-  def to_human
+  def to_human_file_size
     units = %w{B KB MB GB TB}
     e = (Math.log(self)/Math.log(1024)).floor
     s = "%.1f" % (to_f / 1024**e)
@@ -10,6 +10,7 @@ end
 class Time
   def time_ago_human
     #thanks to http://snippets.dzone.com/posts/show/5715
+    
     val = Time.now - self
     #puts val
     if val < 10
