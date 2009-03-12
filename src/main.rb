@@ -53,6 +53,7 @@ class Driver
   
   def backingup_complete!
     load_backups
+    @main_window.backup_complete
   end
   
   def load_backups

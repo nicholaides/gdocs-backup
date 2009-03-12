@@ -26,6 +26,10 @@ class MainWindow
     @main_frame
   end
   
+  def backup_complete
+    @backups_list.selected_index = 0
+  end
+  
   private
     def backup_now_panel
       panel :backup_now, :last_backup do |c, i|
@@ -181,6 +185,7 @@ class MainWindow
     def delete_backups
       if JOptionPane::YES_OPTION == JOptionPane.showConfirmDialog(@frame, "Are you sure you want to delete these backups? This cannot be undone.", "Are you sure?", JOptionPane::YES_NO_OPTION)
         @driver.delete_backups @backups_list.selected_indices.map{|i| @backups[i] }
+        @backups_list.clear_selection
       end
     end
 end
