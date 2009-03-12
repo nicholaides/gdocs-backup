@@ -1,4 +1,5 @@
 require 'backup'
+require 'extensions'
 
 class MainWindow
   include_package 'javax.swing'
@@ -150,7 +151,7 @@ class MainWindow
     
     def changeBackupPane
       @date_field.text = current_backup.timestamp.strftime Time::FORMAT[:long]
-      @size_field.text = current_backup.size.to_s
+      @size_field.text = current_backup.size.to_human
     end
     
     def current_backup
