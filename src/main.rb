@@ -56,17 +56,18 @@ class Driver
     @main_window.backup_complete
   end
   
-  def load_backups
-    @backups.clear
-    @backups.concat Backup.list
-  end
-  
   def delete_backups(backups)
     backups.each &:delete!
     load_backups
   end
   
   private
+    def load_backups
+      @backups.clear
+      @backups.concat Backup.list
+      @main_window.update_backups if @main_window
+    end
+  
     def prompt_for_login_info(err_message = nil)
       LoginWindow.new(self, @main_window.frame, err_message)
     end

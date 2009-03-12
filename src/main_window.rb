@@ -27,6 +27,7 @@ class MainWindow
     @main_frame.default_close_operation = JFrame::EXIT_ON_CLOSE
     
     @backups.contents_changed
+    update_backups
   end
   
   def frame
@@ -35,6 +36,14 @@ class MainWindow
   
   def backup_complete
     @backups_list.selected_index = 0
+  end
+  
+  def update_backups
+    if @backups.empty?
+      @main_deck.get_layout.show @main_deck, 'empty'
+    else
+      @main_deck.get_layout.show @main_deck, 'panel'
+    end
   end
   
   private
@@ -48,12 +57,29 @@ class MainWindow
     end
   
     def main_panel
-      JPanel.new.tap do |jp|
-        jp.layout = BoxLayout.new(jp, BoxLayout::X_AXIS)
-        jp.add backups_panel #, W
-        jp.add backup_panel  #, C
-        jp.add file_panel    #, E
-        jp.border = EmptyBorder.new(10,10,10,10)
+      JPanel.new.tap do |deck|
+        deck.layout = CardLayout.new
+        @main_deck = deck
+        JPanel.new.tap do |jp|
+          deck.add jp, "panel"
+          jp.layout = BoxLayout.new(jp, BoxLayout::X_AXIS)
+          jp.add backups_panel #, W
+          jp.add backup_panel  #, C
+          jp.add file_panel    #, E
+          jp.border = EmptyBorder.new(10,10,10,10)
+        end
+        
+        JPanel.new.tap do |jp|
+          deck.add jp, "empty"
+          jp.add( Swing::LEL.new JPanel, '[icon|<text]' do |c,i|
+            c.icon = JLabel.new(ImageIcon.new('src/icons/gdocs.png'))
+            c.text = JTextArea.new.tap do |ta|
+              ta.text = "\n\nYour Google Docs aren't backed up!"
+              ta.font = Font.new("Sans Serif", Font::BOLD, 18)
+              ta.background = jp.background
+            end
+          end.build)
+        end
       end
     end
   
@@ -172,18 +198,19 @@ class MainWindow
     def last_backup_text
       if @backups.any?
         "Last backed up " + @backups.first.to_s
-      else
-        puts "23"
-        "Not backed up yet (#{@backups.inspect})"
       end
     end
     
     def change_backup_pane
-      @components["date_field"].text = current_backup.timestamp.strftime Time::FORMAT[:long]
-      @components["total_size_field"].text = current_backup.size.to_human_file_size
+      if current_backup
+        @components["date_field"].text = current_backup.timestamp.strftime Time::FORMAT[:long]
+        @components["total_size_field"].text = current_backup.size.to_human_file_size
       
-      @files.clear 
-      @files.concat current_backup.files
+        @files.clear 
+        @files.concat current_backup.files
+      else
+        #show other deck?
+      end
     end
     
     def change_file_pane
