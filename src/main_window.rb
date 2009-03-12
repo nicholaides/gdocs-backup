@@ -149,7 +149,8 @@ class MainWindow
     end
     
     def changeBackupPane
-      @date_field.text = current_backup.timestamp.strftime Time::FORMAT[:long] 
+      @date_field.text = current_backup.timestamp.strftime Time::FORMAT[:long]
+      @size_field.text = current_backup.size.to_s
     end
     
     def current_backup

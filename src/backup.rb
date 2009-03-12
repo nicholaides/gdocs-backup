@@ -22,10 +22,18 @@ class Backup
   end
   
   def files
-    @files ||= Dir[ File.join(@dir, '*') ].grep(/\S - /).map{|file_name| GDocsBackup::BackupFile.new(file_name) }
+    @files ||= file_names.map{|file_name| GDocsBackup::BackupFile.new(file_name) }
+  end
+  
+  def size
+    file_names.map{|file_name| File.size?(file_name) }.compact.sum
   end
   
   private
+    def file_names
+      @file_names ||= Dir[ File.join(@dir, '*') ].grep(/\S - /)
+    end
+    
     def did_when(time)
       #thanks to http://snippets.dzone.com/posts/show/5715
       val = Time.now - time
