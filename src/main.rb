@@ -60,6 +60,11 @@ class Driver
     @backups.concat Backup.list
   end
   
+  def delete_backups(backups)
+    backups.each &:delete!
+    load_backups
+  end
+  
   private
     def prompt_for_login_info(err_message = nil)
       LoginWindow.new(self, @main_window.frame, err_message)

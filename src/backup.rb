@@ -29,6 +29,11 @@ class Backup
     @size ||= files.map(&:size).sum
   end
   
+  def delete!
+    require 'fileutils'
+    FileUtils.rm_rf @dir
+  end
+  
   private
     def file_names
       @file_names ||= Dir[ File.join(@dir, '*') ].grep(/\S - /)

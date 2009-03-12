@@ -102,7 +102,8 @@ class MainWindow
         jp.add title_panel("Previous Backups"), N
         jp.add backups_list, C
         jp.add( panel(:restore, :delete) { |c,i|
-          c.delete  = b "Delete"
+          c.delete = b "Delete"
+          i.delete = a{ delete_backups } 
         }, S)
       end
     end
@@ -175,5 +176,11 @@ class MainWindow
     
     def current_backup
       @backups[@backups_list.get_selected_index]
+    end
+    
+    def delete_backups
+      if JOptionPane::YES_OPTION == JOptionPane.showConfirmDialog(@frame, "Are you sure you want to delete these backups? This cannot be undone.", "Are you sure?", JOptionPane::YES_NO_OPTION)
+        @driver.delete_backups @backups_list.selected_indices.map{|i| @backups[i] }
+      end
     end
 end
