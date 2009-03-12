@@ -138,14 +138,17 @@ class MainWindow
     end
   
     def file_title  
-      JPanel.new.tap do |jp|
-        JTextArea.new.tap do |ta|
+      Swing::LEL.new JPanel, '[^icon|<^*title]' do |c,i|
+        puts java.io.File.new(".").getCanonicalPath
+        
+        c.icon = JLabel.new(ImageIcon.new('src/icons/file_doc_large.png'))
+        c.title = JTextArea.new.tap do |ta|
           @file_title_field = ta
-          jp.add ta
           ta.line_wrap = true
-          ta.maximum_size = d(100, 300)
+          ta.background = JPanel.new.background
+          ta.font = ta.font.derive_font(ta.font.style ^ Font::BOLD)
         end
-      end
+      end.build
     end
   
     def file_details
