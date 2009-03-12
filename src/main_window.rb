@@ -109,9 +109,9 @@ class MainWindow
               ta.border = EmptyBorder.new(86,0,0,0)
             end
           end.build)
-          
-          deck.get_layout.show deck, "empty"
         end
+        
+        deck.get_layout.show deck, "empty"
       end
     end
   
@@ -183,15 +183,43 @@ class MainWindow
     end
   
     def file_panel
-      JPanel.new.tap do |jp|
-        jp.layout = BoxLayout.new(jp, BoxLayout::Y_AXIS)
-        jp.add file_title
-        jp.add file_details
-        jp.add file_preview
-        jp.preferred_size = d(300, 400)
+      JPanel.new.tap do |deck|
+        deck.layout = CardLayout.new
+        @file_deck = deck
+        
+        JPanel.new.tap do |jp|
+          deck.add jp, 'panel'
+          jp.layout = BoxLayout.new(jp, BoxLayout::Y_AXIS)
+          jp.add file_title
+          jp.add file_details
+          jp.add file_preview
+          jp.preferred_size = d(300, 400)
+        end
+        
+        JPanel.new.tap do |jp|
+          deck.add jp, 'empty'
+          
+          jp.add( Swing::LEL.new JPanel, '[icon|<text]' do |c,i|
+            c.icon = JLabel.new(ImageIcon.new('src/icons/arrow_left.png')).tap do |label|
+              label.border = EmptyBorder.new(150,0,0,0)
+            end
+            c.text = JTextArea.new.tap do |ta|
+              ta.text = "\nSelect a file to see more info"
+              ta.font = Font.new("Sans Serif", Font::BOLD, 14)
+              ta.background = jp.background
+              ta.border = EmptyBorder.new(140,0,0,0)
+            end
+          end.build)
+        end
+        
+        JPanel.new.tap do |jp|
+          deck.add jp, 'super empty'
+        end
+        
+        deck.get_layout.show deck, 'super empty'
       end
     end
-  
+    
     def file_title  
       Swing::LEL.new JPanel, '[^icon|<^*title]' do |c,i|
         c.icon = JLabel.new.tap do |label|
@@ -233,9 +261,10 @@ class MainWindow
         @files.concat current_backup.files
         
         @backup_deck.get_layout.show @backup_deck, "panel"
+        @file_deck.get_layout.show @file_deck, "empty"
       else
         @backup_deck.get_layout.show @backup_deck, "empty"
-        #show other deck?
+        @file_deck.get_layout.show @file_deck, "super empty"
       end
     end
     
@@ -249,8 +278,9 @@ class MainWindow
       
         @file_title_field.text = current_file.title
         @title_icon_label.icon = FILE_ICONS[current_file.type]
+        @file_deck.get_layout.show @file_deck, "panel"
       else
-        #show other deck?
+        @file_deck.get_layout.show @file_deck, "empty"
       end
     end
     
