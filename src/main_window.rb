@@ -19,7 +19,7 @@ class MainWindow
     @backups = backups
     @files = ListModel.new
     
-    @main_frame = Swing::Build.new(JFrame, :x){}.build("Simple Draw") do |c|
+    @main_frame = Swing::Build.new(JFrame, :x){}.build("GDocs Backup") do |c|
       c.add backup_now_panel, N
       c.add main_panel, C
     end

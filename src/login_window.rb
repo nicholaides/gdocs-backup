@@ -13,10 +13,13 @@ class LoginWindow
   
   private
     def create_dialog(owner, err_message=nil)
-      @dialog = JDialog.new owner, "Title", true
+      @dialog = JDialog.new owner, "Login with your Google account", true
       
       if err_message
-        @dialog.add( panel(:msg) { |c,i| c.msg = l err_message }, N )
+        @dialog.add( panel(:msg) {|c,i|
+          c.msg = l err_message
+          c.msg.foreground = Color::RED
+        }, N )
       end
       
       layout = "
