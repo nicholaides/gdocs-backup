@@ -1,5 +1,3 @@
-require 'PDFRenderer'
-
 class PreviewWindow
   include_package 'javax.swing'
   include_package 'java.awt'
