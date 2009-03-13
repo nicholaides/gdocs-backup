@@ -3,7 +3,7 @@
 # CS338: GUI, Assignment 2
 
 require 'java'
-require 'facets/core/facets'
+require 'facets/facets'
 
 # listmodel for the jlist of shapes
 #

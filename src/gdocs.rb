@@ -3,7 +3,7 @@ Dir["lib/java/*.jar"].each{|jar| require jar }
 
 require 'net/http'
 require 'uri'
-require 'facets/core/facets'
+require 'facets/facets'
 
 require 'easy_thread'
 require 'yaml'

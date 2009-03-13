@@ -9,13 +9,13 @@ configuration do |c|
   c.source_dirs = ['src', 'lib/ruby']
   c.source_exclude_filter = []
 
-  c.compile_ruby_files = true
+  c.compile_ruby_files = false
   #c.java_lib_files = []  
   c.java_lib_dirs = ['lib/java']
   #c.files_to_copy = []
 
   c.target_jvm_version = 1.5
-  #c.jars[:data] = { :directory => 'data/images', :location_in_jar => 'images', :exclude => /bak/}
+  c.jars[:data] = { :directory => 'src/icons', :location_in_jar => 'src/icons' }
   #c.jvm_arguments = ""
 
   # Bundler options
