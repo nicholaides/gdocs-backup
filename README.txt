@@ -1,6 +1,16 @@
 Mike Nicholaides
 mike.nicholaides@gmail.com
-CS338: GUI Final Project
+
+CS338 Final Project - GDocs Backup
+
+This application backs up your Google Docs files to your hard drive.
+It will create a folder in your $HOME called gdocs-backup.
+
+To use this application, you'll need a Google account.
+If you don't have one already, you can get one here:
+  https://www.google.com/accounts/NewAccount?continue=http%3A%2F%2Fwww.google.com%2F&hl=en
+  Once you create an account, go to http://docs.google.com and create at least
+    1 document.	
 
 To run on your machine
 ----------------------

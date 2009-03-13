@@ -52,6 +52,11 @@ class GDocs
       end
       
       semaphore.synchronize do
+        if files.empty?
+          observer.complete! if observer
+          return
+        end
+        
         observer.update_status "Downloading documents" if observer
         observer.update_progress(0, files.size) if observer
       end

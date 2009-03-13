@@ -300,11 +300,13 @@ class MainWindow
     end
     
     def current_file
+      return nil if @files.empty?
       i = @files_list.get_selected_index
       i >= 0 ? @files[i] : nil
     end
     
     def current_backup
+      return nil if @backups.empty?
       i = @backups_list.get_selected_index
       i >= 0 ? @backups[i] : nil
     end
